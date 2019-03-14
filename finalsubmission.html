@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+  <head>
+
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <title>Mini App</title>
+
+    <style>
+
+      body {
+
+        background: lavender;
+
+        margin:0em ;
+
+        overflow: hidden;
+
+      }
+
+      div.user-photo {
+
+        width: 150px;
+
+        height: 150px;
+
+        margin: 1em auto;
+
+        background: #fff;
+
+        border-radius:50%;
+
+        overflow:hidden;
+
+        }
+
+      img.user-photo {
+
+        display:block;
+
+        object-fit:fill;
+        height:100%;
+        width:100%;
+
+      }
+
+      div.details {
+
+        font-size: 2.3em;
+
+        margin: 2.5em 0.2em 0.2em 0.2em;
+
+        color: #fff;
+
+        padding: 1.1em;
+
+        background:#6200ee;
+
+        min-height: 6em;
+
+      }
+
+      footer {
+
+        width: calc(100% - 2em);
+
+        z-index: 500;
+
+        position: absolute;
+
+        bottom: 0;
+
+        overflow: hidden;
+
+        display: flex;
+
+        justify-content: space-between;
+
+        margin: 0 1em;
+
+        color:#ffff;
+
+      }
+
+      footer button.mdc-icon-button {
+
+        margin: 0.5em;
+
+      }
+      h2{
+        text-align: center;
+        margin-bottom: 3.5em;
+      }
+
+    </style>
+
+  </head>
+
+  <body>
+
+    <h2>Olalekan</h2>
+
+    <div class="user-photo mdc-elevation--z3">
+        <img src= "https://via.placeholder.com/150" class ="user-photo"/>
+    </div>
+
+    <div class="details mdc-elevation--z3">
+       <div class="messages"></div>
+    </div>
+
+   
+
+    <footer>
+
+      <button id= "btn-address" class="mdc-icon-button material-icons">
+
+        address </button>
+
+    <button id= "btn-phone" class="mdc-icon-button material-icons">
+
+      phone </button>
+
+    <button id="btn-birthdate" class="mdc-icon-button material-icons">
+
+      date_range </button>
+
+    </footer>
+
+    <script>
+
+       const notify = (msg) => {
+
+        const toastr = document.querySelector('.messages');
+
+        if(!toastr) return;
+
+        toastr.textContent = msg;
+
+        if(!toastr.classList.contains('on')) {
+
+          toastr.classList.add('on');
+
+        }
+
+      };
+
+ 
+      const clearNotice = () => {
+
+        const toastr = document.querySelector('.messages');
+
+        if(!toastr) return;
+
+        toastr.textContent = '';
+
+        toastr.classList.remove('on');
+
+      };
+
+      const displayUserPhotoAndName = (data) => {
+
+        if(!data) return;
+		const { results } = data;
+       	const  [ profile ] = results;
+        const { name, picture,location, phone, cell, dob } = profile;
+        document.querySelector("h2").innerHTML=`${name.title} ${name.last} ${name.first}`;
+        document.querySelector("img").src= picture.large;
+        displayExtraUserInfo(profile);
+        console.log(data)
+        // add your code here
+
+        clearNotice();
+
+      };
+
+      const displayExtraUserInfo = (input)	=> {
+
+        document.getElementById("btn-birthdate").addEventListener("click", ()=>{ displayBirthdate(input)});
+
+        document.getElementById("btn-phone").addEventListener("click",()=>{  displayPhone(input)});
+
+        document.getElementById("btn-address").addEventListener("click",()=>{  displayAddress(input)});
+
+      }
+
+      const getAUserProfile = () => {
+
+        const api = 'https://randomuser.me/api/';
+		fetch(api)
+  		.then(
+    (response) => {
+      if (response.status !== 200) {
+        console.log('Looks like there was a problem. Status Code: ' +
+          response.status);
+        return;
+      }
+
+      // Examine the text in the response
+      response.json().then( (data) => {
+        displayUserPhotoAndName(data);
+      });
+    }
+  )
+  .catch( (err) => {
+    console.log('Fetch Error :-S', err);
+  });
+   
+        // make API call here
+
+     
+ 
+        notify(`requesting profile data ...`);
+
+      };
+	const displayBirthdate = ({dob}) => {
+       if(dob){
+         
+         document.querySelector('div.details').innerHTML=`${dob.age} years old`;
+       }
+              };
+
+     const displayPhone = ({phone, cell}) => {
+       if(phone && cell){
+                 document.querySelector('div.details').innerHTML=`${phone} / ${cell}`;
+       } };
+
+      const displayAddress = ({location}) => {
+if(location){
+              document.querySelector('div.details').innerHTML=`${location.street}, ${location.city}, ${location.state}`;}
+              };
+
+  
+      const startApp = () => {
+
+        // invoke the getAUserProfile here
+		getAUserProfile()
+      };
+
+
+      startApp();
+
+    </script>
+
+    </body>
+
+</html>
